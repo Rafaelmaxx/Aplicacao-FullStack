@@ -5,26 +5,26 @@ import { IdeaModel } from "./idea.model";
 @ObjectType()
 export class CommentModel {
   @Field(() => ID)
-  id!: string;
+  id!: string
 
   @Field(() => String)
-  content!: string;
+  content!: string
 
   @Field(() => String)
-  authorId!: string;
+  authorId!: string
 
   @Field(() => String)
-  ideaId!: string;
+  ideaId!: string
 
   @Field(() => UserModel, { nullable: true })
-  author!: UserModel;
+  author?: UserModel
 
   @Field(() => IdeaModel, { nullable: true })
-  idea!: IdeaModel;
+  idea?: IdeaModel
 
   @Field(() => GraphQLISODateTime)
-  createdAt!: Date;
+  createdAt!: Date
 
   @Field(() => GraphQLISODateTime)
-  updatedAt!: Date;
+  updatedAt!: Date
 }

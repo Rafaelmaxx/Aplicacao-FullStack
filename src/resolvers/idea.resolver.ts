@@ -15,34 +15,32 @@ import { User } from "@prisma/client";
 import { IsAuth } from "../middlewares/auth.middlewares";
 import { UserService } from "../services/user.service";
 import { UserModel } from "../models/user.model";
+import { CommentModel } from "../models/comment.model";
+import { CommentService } from "../services/comment.service";
 
 @Resolver(() => IdeaModel)
 @UseMiddleware(IsAuth)
 export class IdeaResolver {
   private ideaService = new IdeaService();
   private userService = new UserService();
+  private commentService = new CommentService();
 
-  @Mutation(() => IdeaModel)
+    @Mutation(() => IdeaModel)
   async createIdea(
-    @Arg("data", () => CreateIdeaInput) data: CreateIdeaInput,
-    @GqlUser() user: User,
+    @Arg('data', () => CreateIdeaInput) data: CreateIdeaInput,
+    @GqlUser() user: UserModel
   ): Promise<IdeaModel> {
-    return this.ideaService.createIdea(data, user.id);
+    return this.ideaService.createIdea(data, user.id)
   }
 
   @Mutation(() => IdeaModel)
   async updateIdea(
-    @Arg("data", () => UpdateIdeaInput) data: UpdateIdeaInput,
-    @Arg("id", () => String) id: string,
-    @GqlUser() user: User,
+    @Arg('data', () => UpdateIdeaInput) data: UpdateIdeaInput,
+    @Arg('id', () => String) id: string
   ): Promise<IdeaModel> {
-    return this.ideaService.updateIdea(id, data);
+    return this.ideaService.updateIdea(id, data)
   }
-
-  @Query(() => [IdeaModel])
-  async listIdeas(): Promise<IdeaModel[]> {
-    return this.ideaService.listIdeas();
-  }
+  
 
   @Mutation(() => Boolean)
   async deleteIdea(@Arg("id", () => String) id: string): Promise<boolean> {
@@ -50,8 +48,18 @@ export class IdeaResolver {
     return true;
   }
 
+  @Query(() => [IdeaModel])
+  async listIdeas(): Promise<IdeaModel[]> {
+    return this.ideaService.listIdeas()
+  }
+
   @FieldResolver(() => UserModel)
   async author(@Root() idea: IdeaModel): Promise<UserModel> {
     return this.userService.findUser(idea.authorId);
+  }
+
+  @FieldResolver(() => [CommentModel])
+  async comments(@Root() idea: IdeaModel): Promise<CommentModel[]> {
+    return this.commentService.listByIdea(idea.id);
   }
 }
